@@ -4,7 +4,6 @@ const path = require('path');
 const utils = require('../utils.js');
 const shell = require('shelljs');
 const express = require('express');
-
 const libRoot = path.resolve(__dirname, '..');
 
 function init(config) {
@@ -42,21 +41,26 @@ module.exports = {
   setOptions: function (yargs) { },
   run: function (argv) {
     const app = express();
+    require('express-ws')(app)
     const bodyParser = require('body-parser');
     app.use(bodyParser.json()); // for parsing application/json
     app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
-    app.post('/api/install', function (req, res) {
-      let config = req.body;
-      init(config);
-      let yapiCliPath = path.resolve(libRoot, 'index.js');
-      shell.exec(`node ${yapiCliPath} install --dir ${config.root}`, function(code, stdout, stderr) {
-        res.send({
-          code: code,
-          stdout: stdout,
-          stderr: stderr
+    
+    app.ws('/api/install', function(ws) {
+      ws.on('message', function(config) {
+        config = JSON.parse(config)
+        init(config);
+        let yapiCliPath = path.resolve(libRoot, 'index.js');
+        let client = shell.exec(`node ${yapiCliPath} install --dir ${config.root}`, {async: true});  
+        client.stdout.on('data', function(res){
+          ws.send(res);
         })
-      });  
-    })
+        client.stdout.on('end', function(res){
+          ws.send('---end---')          
+        })
+      });
+    });
+
     app.get('/api/base', function (req, res) {
       res.send({
         root: path.resolve(process.cwd(), 'my-yapi')
@@ -64,7 +68,15 @@ module.exports = {
     })
     app.use(express.static(path.resolve(__dirname, './server')))
     app.listen(9090)
-    console.log('在浏览器打开 http://127.0.0.1:9090')
+    console.log('在浏览器打开 http://127.0.0.1:9090 ');
+    if (process.platform == 'wind32') {
+      cmd = 'start "%ProgramFiles%\Internet Explorer\iexplore.exe"';
+    } else if (process.platform == 'linux') {
+      cmd = 'xdg-open';
+    } else if (process.platform == 'darwin') {
+      cmd = 'open';
+    }
+    shell.exec(cmd +' http://127.0.0.1:9090');
   },
   desc: '部署 YApi 项目'
 }

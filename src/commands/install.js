@@ -92,7 +92,6 @@ async function run(argv){
   shell.cd(yapiPath);
   shell.exec('npm install --production');
   shell.exec(`npm run install-server`);
-  utils.log(`初始化管理员账号为：${config.adminAccount}, 密码为：qunar.com, 请输入域名`);
   utils.log(`部署成功，请在终端切换到部署目录，输入： "node vendors/server/app.js" 指令启动服务器`);
 }
 
@@ -108,7 +107,7 @@ module.exports = {
     result.then(function(){
       process.exit(1);
     }).catch(function (err){
-      utils.error(err.message);
+      console.log('Error: ', err.message);
       process.exit(1);
     })
   },

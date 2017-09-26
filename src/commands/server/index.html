@@ -56,23 +56,25 @@
     </div>
 
     <el-dialog style="min-width: 800px;min-height: 500px;" title="部署日志" :visible.sync="dialogVisible" >
-      <div style="min-width: 800px;min-height: 500px;" v-loading="loading" element-loading-text="正在部署，请稍后...">
-        <p style="whiteSpace:pre-wrap">{{dialogResult}}</p>
-        <span slot="footer" class="dialog-footer">
+      <div style="min-width: 800px;min-height: 500px;" >
+        <div v-for="item in dialogResult" >{{item}}</div>
+        <div style="height: 50px" v-loading="loading" element-loading-text="正在部署，请稍后...">
+
+        </div>
     </span>
       </div>
     </el-dialog>
 
   </div>
   <script>
-    var Ctor;
+    var Ctor, websocket;
     axios.get('/api/base').then(function (res) {
       var Main = {
         data: function () {
           return {
             dialogVisible: false,
             loading: true,
-            dialogResult: '',
+            dialogResult: [],
             ruleForm: {
               root: res.data.root,
               email: 'admin@admin.com',
@@ -119,10 +121,7 @@
                   delete params.dbPass;
                 }
                 that.loading = true;
-                axios.post('/api/install', params).then(function (res) {
-                  that.loading = false;
-                  that.dialogResult = res.data.stdout + "\n" + res.data.stderr;
-                })
+                websocket.send(JSON.stringify(params));
               } else {
                 return false;
               }
@@ -131,8 +130,24 @@
         }
       }
       Ctor = Vue.extend(Main)
-      new Ctor().$mount('#app')
-
+      var model = new Ctor().$mount('#app')
+      var domain = location.hostname + (location.port !== "" ? ":" + location.port : "");
+      websocket = new WebSocket('ws://' + domain + '/api/install');      
+      websocket.onopen = function(){
+        console.log('websocket connect success...');
+      }
+      websocket.onmessage = function(res){
+        if(res.data === '---end---'){
+          model.loading = false;
+        }else{
+          model.dialogResult.push(res.data);
+        }
+        
+        
+      }
+      websocket.onerror = function(){
+        console.error('websocket connect failed.')
+      }
     })
   </script>
 </body>
