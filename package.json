@@ -1,0 +1,25 @@
+{
+  "name": "yapi-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "yapi-cli": "./bin/yapi-cli"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.corp.qunar.com:mfe/yapi-cli.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "download": "^6.2.5",
+    "fs-extra": "^4.0.2",
+    "mongoose": "^4.11.13",
+    "shelljs": "^0.7.8",
+    "yargs": "^9.0.1"
+  }
+}
