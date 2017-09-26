@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="./index.css">
+</head>
+
+<body>
+  <script src="./axios.js"></script>
+  <script src="./vue.js"></script>
+  <script src="./index.js"></script>
+  <div id="app" style="margin-top: 100px">
+
+    <div style="width: 800px; margin: 0 auto;">
+      <h2 style="text-align: center">YApi 平台部署</h2>
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="部署路径" prop="root">
+          <el-input v-model="ruleForm.root"></el-input>
+        </el-form-item>
+        <el-form-item label="管理员邮箱" prop="email">
+          <el-input v-model="ruleForm.email"></el-input>
+        </el-form-item>
+
+        <el-form-item label="网站端口号" prop="port">
+          <el-input v-model="ruleForm.port"></el-input>
+        </el-form-item>
+
+        <el-form-item label="数据库地址" prop="dbAddr">
+          <el-input v-model="ruleForm.dbAddr"></el-input>
+        </el-form-item>
+
+        <el-form-item label="数据库端口" prop="dbPort">
+          <el-input v-model="ruleForm.dbPort"></el-input>
+        </el-form-item>
+
+        <el-form-item label="数据库名" prop="dbName">
+          <el-input v-model="ruleForm.dbName"></el-input>
+        </el-form-item>
+
+        <el-form-item label="数据库认证" prop="enableDbAuth">
+          <el-switch on-text="" off-text v-model="ruleForm.enableDbAuth"></el-switch>
+        </el-form-item>
+
+        <el-form-item v-show="ruleForm.enableDbAuth" label="数据库用户名" prop="dbUser">
+          <el-input v-model="ruleForm.dbUser"></el-input>
+        </el-form-item>
+        <el-form-item v-show="ruleForm.enableDbAuth" label="数据库密码" prop="dbPass">
+          <el-input v-model="ruleForm.dbPass"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitForm('ruleForm')">立即部署</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+
+    <el-dialog style="min-width: 800px;min-height: 500px;" title="部署日志" :visible.sync="dialogVisible" >
+      <div style="min-width: 800px;min-height: 500px;" v-loading="loading" element-loading-text="正在部署，请稍后...">
+        <p style="whiteSpace:pre-wrap">{{dialogResult}}</p>
+        <span slot="footer" class="dialog-footer">
+    </span>
+      </div>
+    </el-dialog>
+
+  </div>
+  <script>
+    var Ctor;
+    axios.get('/api/base').then(function (res) {
+      var Main = {
+        data: function () {
+          return {
+            dialogVisible: false,
+            loading: true,
+            dialogResult: '',
+            ruleForm: {
+              root: res.data.root,
+              email: 'admin@admin.com',
+              port: '3000',
+              dbAddr: '127.0.0.1',
+              dbPort: '27017',
+              dbName: 'yapi',
+              dbUser: '',
+              dbPass: '',
+              enableDbAuth: false
+            },
+            rules: {
+              root: [
+                { required: true, message: '请输入部署路径' }
+              ],
+              email: [
+                { required: true, message: '请输入管理员邮箱' }
+              ],
+              port: [
+                { required: true, message: '请输入服务器端口号' }
+              ],
+              dbAddr: [
+                { required: true, message: '请输入数据库地址' }
+              ],
+              dbPort: [
+                { required: true, message: '请输入数据库端口号' }
+              ],
+              dbName: [
+                { required: true, message: '请输入数据库名称' }
+              ]
+            }
+          }
+        },
+        methods: {
+          submitForm(formName) {
+            this.$refs[formName].validate((valid) => {
+              if (valid) {
+                this.dialogVisible = true;
+                var that = this;
+                var model = this.ruleForm;
+                var params = Object.assign({}, model);
+                if (params.dbUser == '' && params.dbPass == '') {
+                  delete params.dbUser;
+                  delete params.dbPass;
+                }
+                that.loading = true;
+                axios.post('/api/install', params).then(function (res) {
+                  that.loading = false;
+                  that.dialogResult = res.data.stdout + "\n" + res.data.stderr;
+                })
+              } else {
+                return false;
+              }
+            });
+          }
+        }
+      }
+      Ctor = Vue.extend(Main)
+      new Ctor().$mount('#app')
+
+    })
+  </script>
+</body>
+
+</html>

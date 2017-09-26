@@ -16,7 +16,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.18.2",
     "download": "^6.2.5",
+    "express": "^4.15.5",
     "fs-extra": "^4.0.2",
     "mongoose": "^4.11.13",
     "shelljs": "^0.7.8",

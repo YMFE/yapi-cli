@@ -72,7 +72,7 @@ async function verifyConfig(config){
 }
 
 async function run(argv){
-  root = process.cwd();
+  root = argv.dir;
   let configFilepath = path.resolve(root, 'config.json');
   if(!fileExist(configFilepath)){
     throw new Error( '在当前目录找不到配置文件 config.json ');
@@ -92,17 +92,20 @@ async function run(argv){
   shell.cd(yapiPath);
   shell.exec('npm install --production');
   shell.exec(`npm run install-server`);
-  utils.log(`部署成功， 初始化管理员账号为：${config.adminAccount}, 密码为：qunar.com `);
+  utils.log(`初始化管理员账号为：${config.adminAccount}, 密码为：qunar.com, 请输入域名`);
+  utils.log(`部署成功，请在终端切换到部署目录，输入： "node vendors/server/app.js" 指令启动服务器`);
 }
 
 module.exports = {
   setOptions: function (yargs) {
-
+    yargs.option('dir', {
+      describe: '部署路径，默认为当前目录',
+      default: process.cwd()
+    })
   },
   run: function (argv) {
     let result = run(argv);
     result.then(function(){
-      utils.log('部署成功');
       process.exit(1);
     }).catch(function (err){
       utils.error(err.message);
