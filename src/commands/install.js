@@ -74,7 +74,7 @@ async function verifyConfig(config){
 
 function handleNpmInstall(){
   return new Promise(function(resolve, reject){
-    let child = shell.exec('npm install -q --production', {async: true, silent: true});
+    let child = shell.exec('npm install -q --production --registry https://registry.npm.taobao.org', {async: true, silent: true});
     child.stdout.on('data', (data) => {
       console.log(` ${data}`);
     });
@@ -112,8 +112,17 @@ function handleServerInstall(){
 async function run(argv){
   root = argv.dir;
   let configFilepath = path.resolve(root, 'config.json');
+  
+  if(!shell.which('node') || !shell.which('npm')){
+    throw new Error('需要配置 node 和 npm 环境');
+  }
+  let nodeVersion = parseFloat(shell.exec('node -v').substr(1));
+  
+  if(nodeVersion < 7.6){
+    throw new Error('node 需要 7.6 或以上版本')
+  }
   if(!fileExist(configFilepath)){
-    throw new Error( '在当前目录找不到配置文件 config.json ');
+    throw new Error( '在项目目录找不到配置文件 config.json ');
   }
   config = require(configFilepath);
   if (!config || typeof config !== 'object') {
@@ -124,11 +133,13 @@ async function run(argv){
   }
   ensureFilepaths(root);
   await verifyConfig(config);
-
   let yapiPath = path.resolve(root, 'vendors');
-  await wget(yapiPath);
+  utils.log('开始下载平台文件压缩包...')
+  await wget(yapiPath);  
+  utils.log('部署文件完成，正在执行 npm install...')
   shell.cd(yapiPath);
   await handleNpmInstall();
+  utils.log('npm install完成，正在初始化数据库mongodb...')
   await handleServerInstall();
   utils.log(`部署成功，请切换到部署目录，输入： "node vendors/server/app.js" 指令启动服务器`);
 }
