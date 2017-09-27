@@ -116,7 +116,7 @@ async function run(argv){
   if(!shell.which('node') || !shell.which('npm')){
     throw new Error('需要配置 node 和 npm 环境');
   }
-  let nodeVersion = parseFloat(shell.exec('node -v').substr(1));
+  let nodeVersion = parseFloat(shell.exec('node -v', {silent: true}).substr(1));
   
   if(nodeVersion < 7.6){
     throw new Error('node 需要 7.6 或以上版本')
@@ -139,7 +139,7 @@ async function run(argv){
   utils.log('部署文件完成，正在执行 npm install...')
   shell.cd(yapiPath);
   await handleNpmInstall();
-  utils.log('npm install完成，正在初始化数据库mongodb...')
+  utils.log('npm install 完成，正在初始化数据库mongodb...')
   await handleServerInstall();
   utils.log(`部署成功，请切换到部署目录，输入： "node vendors/server/app.js" 指令启动服务器`);
 }

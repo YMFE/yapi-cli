@@ -13,7 +13,7 @@
   <script src="./index.js"></script>
   <div id="app" style="margin-top: 100px">
 
-    <div style="width: 800px; margin: 0 auto;">
+    <div style="width: 1000px; margin: 0 auto;">
       <h2 style="text-align: center">YApi 平台部署</h2>
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
         <el-form-item label="部署路径" prop="root">
@@ -55,10 +55,10 @@
       </el-form>
     </div>
 
-    <el-dialog style="min-width: 800px;min-height: 500px;" title="部署日志" :visible.sync="dialogVisible" >
-      <div style="min-width: 800px;min-height: 500px;" >
+    <el-dialog style="min-height: 500px;" title="部署日志" :visible.sync="dialogVisible" >
+      <div style="min-height: 500px;" >
         <div v-for="item in dialogResult" >{{item}}</div>
-        <div style="height: 50px; width: 800px" v-loading="loading" element-loading-text="正在部署，请稍后...">
+        <div style="height: 50px;" v-loading="loading" element-loading-text="正在部署，请稍后...">
 
         </div>
     </span>
@@ -67,7 +67,7 @@
 
   </div>
   <script>
-    var Ctor, websocket;
+    var Ctor, websocket, model;
     axios.get('/api/base').then(function (res) {
       var Main = {
         data: function () {
@@ -113,9 +113,10 @@
             this.$refs[formName].validate((valid) => {
               if (valid) {
                 this.dialogVisible = true;
-                var that = this;
-                var model = this.ruleForm;
-                var params = Object.assign({}, model);
+                var m = model.ruleForm;
+                model.dialogResult.splice(0);
+                var that = this;                
+                var params = Object.assign({}, m);
                 if (params.dbUser == '' && params.dbPass == '') {
                   delete params.dbUser;
                   delete params.dbPass;
@@ -130,7 +131,7 @@
         }
       }
       Ctor = Vue.extend(Main)
-      var model = new Ctor().$mount('#app')
+      model = new Ctor().$mount('#app')
       var domain = location.hostname + (location.port !== "" ? ":" + location.port : "");
       websocket = new WebSocket('ws://' + domain + '/api/install');      
       websocket.onopen = function(){
