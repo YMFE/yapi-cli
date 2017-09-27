@@ -55,7 +55,10 @@ module.exports = {
         client.stdout.on('data', function(res){
           ws.send(res);
         })
-        client.stdout.on('end', function(res){
+        client.stderr.on('data', function(res){
+          ws.send(res);
+        })
+        client.on('close', function(){
           ws.send('---end---')          
         })
       });

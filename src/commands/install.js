@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const download = require('download');
 const utils = require('../utils.js');
 const shell = require('shelljs');
+shell.config.fatal = true;
 
 var root, config;
 const BASE_PATH = 'http://gitlab.corp.qunar.com/mfe/yapi/repository/archive.zip?ref=dev';
@@ -71,6 +72,43 @@ async function verifyConfig(config){
   }
 }
 
+function handleNpmInstall(){
+  return new Promise(function(resolve, reject){
+    let child = shell.exec('npm install -q --production', {async: true, silent: true});
+    child.stdout.on('data', (data) => {
+      console.log(` ${data}`);
+    });
+    
+    child.stderr.on('data', (data) => {
+      console.log(` ${data}`);
+    });
+    
+    child.on('close', (code) => {
+      resolve(true);
+    });
+  })
+}
+
+function handleServerInstall(){
+  return new Promise(function(resolve, reject){
+    let child = shell.exec(`npm run install-server`,{async: true, silent: true});
+    child.stdout.on('data', (data) => {
+      console.log(` ${data}`);
+    });
+    
+    child.stderr.on('data', (data) => {
+      reject({
+        message: data
+      });
+    });
+    
+    child.on('close', (code) => {
+      resolve(true);
+    });
+
+  })
+}
+
 async function run(argv){
   root = argv.dir;
   let configFilepath = path.resolve(root, 'config.json');
@@ -90,9 +128,9 @@ async function run(argv){
   let yapiPath = path.resolve(root, 'vendors');
   await wget(yapiPath);
   shell.cd(yapiPath);
-  shell.exec('npm install --production');
-  shell.exec(`npm run install-server`);
-  utils.log(`部署成功，请在终端切换到部署目录，输入： "node vendors/server/app.js" 指令启动服务器`);
+  await handleNpmInstall();
+  await handleServerInstall();
+  utils.log(`部署成功，请切换到部署目录，输入： "node vendors/server/app.js" 指令启动服务器`);
 }
 
 module.exports = {
