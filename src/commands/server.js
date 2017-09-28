@@ -66,6 +66,7 @@ module.exports = {
 
     app.get('/api/base', function (req, res) {
       res.send({
+        versions: require('../config.js').versions ,
         root: path.resolve(process.cwd(), 'my-yapi')
       })
     })

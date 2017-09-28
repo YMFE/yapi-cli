@@ -11,14 +11,27 @@
   <script src="./axios.js"></script>
   <script src="./vue.js"></script>
   <script src="./index.js"></script>
-  <div id="app" style="margin-top: 100px">
+  <div id="app" style="margin-top: 100px; display: none">
 
     <div style="width: 1000px; margin: 0 auto;">
       <h2 style="text-align: center">YApi 平台部署</h2>
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-        <el-form-item label="部署路径" prop="root">
-          <el-input v-model="ruleForm.root"></el-input>
+        <el-form-item label="部署版本" prop="version">
+            <el-select v-model="ruleForm.version" placeholder="请选择">
+                <el-option
+                  v-for="item in ruleForm.versions"
+                  :key="item"
+                  :label="item"
+                  :value="item">
+                </el-option>
+              </el-select>
         </el-form-item>
+        <el-form-item label="公司名称" prop="company">
+          <el-input v-model="ruleForm.company"></el-input>
+        </el-form-item>
+        <el-form-item label="部署路径" prop="root">
+            <el-input v-model="ruleForm.root"></el-input>
+          </el-form-item>
         <el-form-item label="管理员邮箱" prop="email">
           <el-input v-model="ruleForm.email"></el-input>
         </el-form-item>
@@ -50,7 +63,7 @@
           <el-input v-model="ruleForm.dbPass"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleForm')">立即部署</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm')">开始部署</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -69,6 +82,7 @@
   <script>
     var Ctor, websocket, model;
     axios.get('/api/base').then(function (res) {
+      document.getElementById('app').style.display = 'block';
       var Main = {
         data: function () {
           return {
@@ -76,7 +90,9 @@
             loading: true,
             dialogResult: [],
             ruleForm: {
+              version:res.data.versions[0],
               root: res.data.root,
+              versions: res.data.versions,
               email: 'admin@admin.com',
               port: '3000',
               dbAddr: '127.0.0.1',
@@ -87,6 +103,12 @@
               enableDbAuth: false
             },
             rules: {
+              company: {
+                required: true
+              },
+              version:{
+                required: true
+              },
               root: [
                 { required: true, message: '请输入部署路径' }
               ],
