@@ -80,7 +80,9 @@ module.exports = {
     } else if (process.platform == 'darwin') {
       cmd = 'open';
     }
-    shell.exec(cmd +' http://127.0.0.1:9090');
+    try{
+      shell.exec(cmd +' http://127.0.0.1:9090', {silent: true});
+    }catch(err){}
   },
   desc: '部署 YApi 项目'
 }
