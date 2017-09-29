@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const download = require('download');
 const utils = require('../utils.js');
 const shell = require('shelljs');
-shell.config.fatal = true;
 
 var root, config;
 
