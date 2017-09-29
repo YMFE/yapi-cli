@@ -7,15 +7,15 @@ shell.config.fatal = true;
 
 var root, config;
 
-function wget( dest) {
-  const url = github('dev');
+function wget( dest, v) {
+  const url = github(v);
   const cmd = download(url, dest, { extract: true, strip: 1 });
   cmd.stdout = process.stdout;  
   return cmd;
 }
 
-function github(version) {
-  return 'http://gitlab.corp.qunar.com/mfe/yapi/repository/archive.zip?ref=' + version;
+function github(v) {
+  return 'http://gitlab.corp.qunar.com/mfe/yapi/repository/archive.zip?ref=' + v;
 }
 
 function fileExist(filePath) {
@@ -44,9 +44,8 @@ function handleNpmInstall(){
 }
 
 async function run(argv){
-  root = argv.dir;
+  root = process.cwd();
   let configFilepath = path.resolve(root, 'config.json');
-  
   if(!shell.which('node') || !shell.which('npm')){
     throw new Error('需要配置 node 和 npm 环境');
   }
@@ -56,13 +55,18 @@ async function run(argv){
     throw new Error('node 需要 7.6 或以上版本')
   }
   if(!fileExist(configFilepath)){
-    throw new Error( '在项目目录找不到配置文件 config.json ');
+    throw new Error( '项目目录找不到配置文件 config.json ');
   }
+
+  let v = argv.v;
   
+  if(!v || typeof v !== 'string'){
+    throw new Error('版本号不能为空');
+  } 
+    
   let yapiPath = path.resolve(root, 'vendors');
-  
   utils.log('开始下载平台文件压缩包...')
-  await wget(yapiPath);  
+  await wget(yapiPath, v);  
   utils.log('部署文件完成，正在执行 npm install...')
   shell.cd(yapiPath);
   await handleNpmInstall();
@@ -71,9 +75,8 @@ async function run(argv){
 
 module.exports = {
   setOptions: function (yargs) {
-    yargs.option('dir', {
-      describe: '部署路径，默认为当前目录',
-      default: process.cwd()
+    yargs.option('v', {
+      describe: '部署版本'
     })
   },
   run: function (argv) {

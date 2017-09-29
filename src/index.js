@@ -1,7 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
 const yargs = require('yargs');
-
 const commandsDir = path.resolve(__dirname, 'commands');
 var commands = [];
 var commandsFile = fs.readdirSync(commandsDir);
