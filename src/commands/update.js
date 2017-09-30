@@ -3,7 +3,6 @@ const fs = require('fs-extra');
 const download = require('download');
 const utils = require('../utils.js');
 const shell = require('shelljs');
-shell.config.fatal = true;
 
 var root, config;
 

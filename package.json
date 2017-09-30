@@ -16,6 +16,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.16.2",
     "body-parser": "^1.18.2",
     "download": "^6.2.5",
     "express": "^4.15.5",

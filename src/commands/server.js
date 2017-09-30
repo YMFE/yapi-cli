@@ -5,6 +5,7 @@ const utils = require('../utils.js');
 const shell = require('shelljs');
 const express = require('express');
 const libRoot = path.resolve(__dirname, '..');
+const axios = require('axios');
 
 function init(config) {
   let root = config.root;
@@ -27,6 +28,11 @@ function init(config) {
       }
 
     }
+  }
+  if(config.company){
+    try{
+      axios.post('http://yapi.demo.qunar.com/publicapi/statis', {company: config.company}).then(res=>{});
+    }catch(e){}
   }
   if(config.enableDbAuth && config.dbUser){
     config.db.user = config.dbUser;
@@ -84,5 +90,5 @@ module.exports = {
       shell.exec(cmd +' http://127.0.0.1:9090', {silent: true});
     }catch(err){}
   },
-  desc: '部署 YApi 项目'
+  desc: '更新 YApi 平台'
 }
