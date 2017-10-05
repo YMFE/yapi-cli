@@ -1,23 +1,12 @@
 const path = require('path');
 const fs = require('fs-extra');
 const mongoose = require('mongoose');
-const download = require('download');
 const utils = require('../utils.js');
 const shell = require('shelljs');
 
 var root, config;
-
-function wget( dest) {
-  const url = github('dev');
-  const cmd = download(url, dest, { extract: true, strip: 1 });
-  cmd.stdout = process.stdout;  
-  return cmd;
-}
-
-function github(version) {
-  return 'http://gitlab.corp.qunar.com/mfe/yapi/repository/archive.zip?ref=' + version;
-}
-
+const wget = utils.wget;
+const fileExist = utils.fileExist;
 function connect(config) {
   mongoose.Promise = global.Promise;
   let options = {
@@ -43,13 +32,7 @@ function ensureFilepaths(root) {
   })
 }
 
-function fileExist(filePath) {
-  try {
-    return fs.statSync(filePath).isFile();
-  } catch (err) {
-    return false;
-  }
-}
+
 
 
 async function verifyConfig(config){
@@ -119,6 +102,7 @@ async function run(argv){
   if(nodeVersion < 7.6){
     throw new Error('node 需要 7.6 或以上版本')
   }
+
   if(!fileExist(configFilepath)){
     throw new Error( '在项目目录找不到配置文件 config.json ');
   }
@@ -129,15 +113,22 @@ async function run(argv){
   if(fileExist(path.resolve(root, 'init.lock'))){
     throw new Error('系统已安装，如需重新安装，请清空数据库和删除init.lock文件');
   }
+  let v = argv.v;
+
+  if(!v || typeof v !== 'string'){
+    throw new Error('版本号不能为空');
+  }
+  utils.log(`当前安装版本： ${v}`) 
   ensureFilepaths(root);
+  
   await verifyConfig(config);
   let yapiPath = path.resolve(root, 'vendors');
   utils.log('开始下载平台文件压缩包...')
-  await wget(yapiPath);  
-  utils.log('部署文件完成，正在执行 npm install...')
+  await wget(yapiPath, v);  
+  utils.log('部署文件完成，正在安装依赖库...')
   shell.cd(yapiPath);
   await handleNpmInstall();
-  utils.log('npm install 完成，正在初始化数据库mongodb...')
+  utils.log('依赖库安装完成，正在初始化数据库 mongodb...')
   await handleServerInstall();
   utils.log(`部署成功，请切换到部署目录，输入： "node vendors/server/app.js" 指令启动服务器`);
 }
@@ -147,6 +138,10 @@ module.exports = {
     yargs.option('dir', {
       describe: '部署路径，默认为当前目录',
       default: process.cwd()
+    })
+    yargs.option('v', {
+      alias: 'v',
+      describe: '部署版本'
     })
   },
   run: function (argv) {

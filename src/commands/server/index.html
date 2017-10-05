@@ -20,9 +20,9 @@
             <el-select v-model="ruleForm.version" placeholder="请选择">
                 <el-option
                   v-for="item in ruleForm.versions"
-                  :key="item"
-                  :label="item"
-                  :value="item">
+                  :key="item.version"
+                  :label="item.version"
+                  :value="item.version">
                 </el-option>
               </el-select>
         </el-form-item>
@@ -83,6 +83,10 @@
     var Ctor, websocket, model;
     axios.get('/api/base').then(function (res) {
       document.getElementById('app').style.display = 'block';
+      res.data.versions.map(function(item){
+        item.version = 'v' + item.version;
+        return item;
+      })
       var Main = {
         data: function () {
           return {
@@ -90,7 +94,7 @@
             loading: true,
             dialogResult: [],
             ruleForm: {
-              version:res.data.versions[0],
+              version:res.data.versions[0].version,
               root: res.data.root,
               versions: res.data.versions,
               email: 'admin@admin.com',

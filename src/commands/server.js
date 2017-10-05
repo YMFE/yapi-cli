@@ -57,7 +57,8 @@ module.exports = {
         config = JSON.parse(config)
         init(config);
         let yapiCliPath = path.resolve(libRoot, 'index.js');
-        let client = shell.exec(`node ${yapiCliPath} install --dir ${config.root}`, {async: true});  
+        let client = shell.exec(`node ${yapiCliPath} install --v ${config.version} --dir ${config.root}`, {async: true});  
+        console.log(config.version);
         client.stdout.on('data', function(res){
           ws.send(res);
         })
@@ -71,9 +72,11 @@ module.exports = {
     });
 
     app.get('/api/base', function (req, res) {
-      res.send({
-        versions: require('../config.js').versions ,
-        root: path.resolve(process.cwd(), 'my-yapi')
+      axios.get('http://yapi.demo.qunar.com/publicapi/versions').then(result=>{
+        res.send({
+          versions:  result.data,
+          root: path.resolve(process.cwd(), 'my-yapi')
+        })
       })
     })
     app.use(express.static(path.resolve(__dirname, './server')))

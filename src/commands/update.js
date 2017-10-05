@@ -6,24 +6,8 @@ const shell = require('shelljs');
 
 var root, config;
 
-function wget( dest, v) {
-  const url = github(v);
-  const cmd = download(url, dest, { extract: true, strip: 1 });
-  cmd.stdout = process.stdout;  
-  return cmd;
-}
-
-function github(v) {
-  return 'http://gitlab.corp.qunar.com/mfe/yapi/repository/archive.zip?ref=' + v;
-}
-
-function fileExist(filePath) {
-  try {
-    return fs.statSync(filePath).isFile();
-  } catch (err) {
-    return false;
-  }
-}
+const wget = utils.wget;
+const fileExist = utils.fileExist;
 
 function handleNpmInstall(){
   return new Promise(function(resolve, reject){
