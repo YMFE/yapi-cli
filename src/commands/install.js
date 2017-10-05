@@ -120,17 +120,22 @@ async function run(argv){
   }
   utils.log(`当前安装版本： ${v}`) 
   ensureFilepaths(root);
+  let domain = config.port == '80' ? 'http://127.0.0.1' : 'http://127.0.0.1:3000'
+  try{
+    await verifyConfig(config);
+    let yapiPath = path.resolve(root, 'vendors');
+    utils.log('开始下载平台文件压缩包...')
+    await wget(yapiPath, v);  
+    utils.log('部署文件完成，正在安装依赖库...')
+    shell.cd(yapiPath);
+    await handleNpmInstall();
+    utils.log('依赖库安装完成，正在初始化数据库mongodb...')
+    await handleServerInstall();
+    utils.log(`部署成功，请切换到部署目录，输入： "node vendors/server/app.js" 指令启动服务器, 然后在浏览器打开 ${domain} 访问`);
+  }catch(e){
+    throw new Error(e.message)
+  }
   
-  await verifyConfig(config);
-  let yapiPath = path.resolve(root, 'vendors');
-  utils.log('开始下载平台文件压缩包...')
-  await wget(yapiPath, v);  
-  utils.log('部署文件完成，正在安装依赖库...')
-  shell.cd(yapiPath);
-  await handleNpmInstall();
-  utils.log('依赖库安装完成，正在初始化数据库 mongodb...')
-  await handleServerInstall();
-  utils.log(`部署成功，请切换到部署目录，输入： "node vendors/server/app.js" 指令启动服务器`);
 }
 
 module.exports = {
