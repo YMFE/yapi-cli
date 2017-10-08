@@ -1,6 +1,6 @@
 {
   "name": "yapi-cli",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -24,6 +24,7 @@
     "fs-extra": "^4.0.2",
     "mongoose": "^4.11.13",
     "shelljs": "^0.7.8",
+    "underscore": "^1.8.3",
     "yargs": "^9.0.1"
   }
 }

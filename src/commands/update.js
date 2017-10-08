@@ -3,6 +3,8 @@ const fs = require('fs-extra');
 const download = require('download');
 const utils = require('../utils.js');
 const shell = require('shelljs');
+const axios = require('axios');
+const _ = require('underscore');
 
 var root, config;
 
@@ -46,6 +48,11 @@ async function run(argv){
   if(!v || typeof v !== 'string'){
     throw new Error('版本号不能为空');
   } 
+
+  let versions = await axios.get('http://yapi.demo.qunar.com/publicapi/versions');
+  if(!_.find(versions.data, item=>('v' + item.version) === v)){
+    throw new Error('不存在的版本号，请执行 yapi-cli ls 查看版本号列表');
+  }
     
   let yapiPath = path.resolve(root, 'vendors');
   utils.log('开始下载平台文件压缩包...')
@@ -59,6 +66,7 @@ async function run(argv){
 module.exports = {
   setOptions: function (yargs) {
     yargs.option('v', {
+      alias: 'v',
       describe: '部署版本'
     })
   },
