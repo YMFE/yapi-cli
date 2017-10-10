@@ -46,11 +46,12 @@ module.exports = {
       utils.log('插件下载成功，正在安装依赖...');
       shell.exec('npm install --registry https://registry.npm.taobao.org');
       utils.log('依赖安装完成，正在编译客户端')
-      shell.exec('ykit pack -m')
       config.plugins.push({
         name: pluginName
-      })
+      }) 
       fs.writeFileSync(configFilepath, JSON.stringify(config, null, '   '));
+      shell.exec('ykit pack -m')
+           
       utils.log('安装插件成功，请重启服务器')
     } catch (e) {
       utils.log(e.message);

@@ -43,15 +43,15 @@ module.exports = {
         return true;
 
       })
-
+      fs.writeFileSync(configFilepath, JSON.stringify(config, null, '   '));
       shell.cd('vendors');
       utils.log('正在编译客户端')
       shell.exec('ykit pack -m')
-      fs.writeFileSync(configFilepath, JSON.stringify(config, null, '   '));
+      
       utils.log('卸载插件成功，请重启服务器')
     } catch (e) {
       utils.log(e.message);
     }
   },
-  desc: '插件安装'
+  desc: '插件卸载'
 }
