@@ -6,7 +6,7 @@ const shell = require('shelljs');
 const express = require('express');
 const libRoot = path.resolve(__dirname, '..');
 const axios = require('axios');
-
+const fileExist = utils.fileExist;
 function init(config) {
   let root = config.root;
   let data = {
@@ -34,6 +34,9 @@ function init(config) {
       axios.post('http://yapi.demo.qunar.com/publicapi/statis', {company: config.company}).then(res=>{});
     }catch(e){}
   }
+  if(fileExist(path.resolve(root, 'init.lock'))){
+    throw new Error('系统已安装，如需重新安装，请清空数据库和删除init.lock文件');
+  }
   if(config.enableDbAuth && config.dbUser){
     data.db.user = config.dbUser;
     data.db.pass = config.dbPass;
@@ -53,21 +56,26 @@ module.exports = {
     app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
     
     app.ws('/api/install', function(ws) {
-      ws.on('message', function(config) {
-        config = JSON.parse(config)
-        init(config);
-        let yapiCliPath = path.resolve(libRoot, 'index.js');
-        let client = shell.exec(`node ${yapiCliPath} install --v ${config.version} --dir ${config.root}`, {async: true});  
-        console.log(config.version);
-        client.stdout.on('data', function(res){
-          ws.send(res);
-        })
-        client.stderr.on('data', function(res){
-          ws.send(res);
-        })
-        client.on('close', function(){
-          ws.send('---end---')          
-        })
+      ws.on('message', function(config) {       
+        try{
+          config = JSON.parse(config)
+          init(config);
+          let yapiCliPath = path.resolve(libRoot, 'index.js');
+          let client = shell.exec(`node ${yapiCliPath} install --v ${config.version} --dir ${config.root}`, {async: true});          
+          client.stdout.on('data', function(res){
+            ws.send(res);
+          })
+          client.stderr.on('data', function(res){
+            ws.send(res);
+          })
+          client.on('close', function(){
+            ws.send('---end---');    
+          })
+        }catch(e){
+          ws.send(e.message);
+          ws.send('---end---');
+        }
+        
       });
     });
 
