@@ -13,6 +13,10 @@ commandsFile.forEach(function(file){
   let commandName = path.basename(file, '.js');
   yargs.command(commandName, commandModule.desc, commandModule.setOptions, commandModule.run);
 })
+try{
+  yargs.argv;
+}catch(e){
+  console.error(e);
+}
 
-yargs.argv;
 

@@ -11,56 +11,79 @@ var root, config;
 const wget = utils.wget;
 const fileExist = utils.fileExist;
 
-function handleNpmInstall(){
-  return new Promise(function(resolve, reject){
-    let child = shell.exec('npm install -q --production --registry https://registry.npm.taobao.org', {async: true, silent: true});
-    child.stdout.on('data', (data) => {
-      console.log(` ${data}`);
-    });
-    
-    child.stderr.on('data', (data) => {
-      console.log(` ${data}`);
-    });
-    
-    child.on('close', (code) => {
-      resolve(true);
-    });
-  })
-}
+// function handleNpmInstall(){
+//   return new Promise(function(resolve, reject){
+//     let child = shell.exec('npm install -q --production --registry https://registry.npm.taobao.org', {async: true, silent: true});
+//     child.stdout.on('data', (data) => {
+//       console.log(` ${data}`);
+//     });
 
-async function run(argv){
+//     child.stderr.on('data', (data) => {
+//       console.log(` ${data}`);
+//     });
+
+//     child.on('close', (code) => {
+//       resolve(true);
+//     });
+//   })
+// }
+
+async function run(argv) {
   root = process.cwd();
   let configFilepath = path.resolve(root, 'config.json');
-  if(!shell.which('node') || !shell.which('npm')){
+  if (!fileExist(configFilepath)) {
+    throw new Error('项目目录找不到配置文件 config.json ');
+  }
+  if (!shell.which('node') || !shell.which('npm')) {
     throw new Error('需要配置 node 和 npm 环境');
   }
-  let nodeVersion = parseFloat(shell.exec('node -v', {silent: true}).substr(1));
-  
-  if(nodeVersion < 7.6){
+  let nodeVersion = parseFloat(shell.exec('node -v', { silent: true }).substr(1));
+
+  if (nodeVersion < 7.6) {
     throw new Error('node 需要 7.6 或以上版本')
   }
-  if(!fileExist(configFilepath)){
-    throw new Error( '项目目录找不到配置文件 config.json ');
-  }
+
 
   let v = argv.v;
-  
-  if(!v || typeof v !== 'string'){
+  let hasPlugin = false;
+
+  if (!v || typeof v !== 'string') {
     throw new Error('版本号不能为空');
-  } 
+  }
 
   let versions = await axios.get('http://yapi.demo.qunar.com/publicapi/versions');
-  if(!_.find(versions.data, item=>('v' + item.version) === v)){
+  if (!_.find(versions.data, item => ('v' + item.version) === v)) {
     throw new Error('不存在的版本号，请执行 yapi-cli ls 查看版本号列表');
   }
-    
+  let config = require(configFilepath);
+  let npmInstall = 'npm install --production --registry https://registry.npm.taobao.org';
+  if (config.plugins && Array.isArray(config.plugins) && config.plugins.length > 0) {
+    hasPlugin = true;
+    npmInstall = 'npm install --registry https://registry.npm.taobao.org';
+  }
+
   let yapiPath = path.resolve(root, 'vendors');
   utils.log('开始下载平台文件压缩包...')
-  await wget(yapiPath, v);  
+  await wget(yapiPath, v);
   utils.log('部署文件完成，正在执行 npm install...')
   shell.cd(yapiPath);
-  await handleNpmInstall();
-  utils.log('部署成功，请切换到部署目录，输入： "node vendors/server/app.js" 指令启动服务器')  
+
+  shell.exec(npmInstall);
+  if (hasPlugin) {
+    config.plugins.forEach(item => {
+      if (!item) {
+        return null;
+      }
+      if (typeof item === 'string') {
+        shell.exec('npm install ' + 'yapi-plugin-' + item)
+      } else if (typeof item === 'object') {
+        shell.exec('npm install ' + 'yapi-plugin-' + item.name)
+      }
+    })
+    shell.exec('ykit pack -m');
+  }
+
+  utils.log('更新成功，请重启服务器')
 }
 
 module.exports = {
@@ -72,9 +95,9 @@ module.exports = {
   },
   run: function (argv) {
     let result = run(argv);
-    result.then(function(){
+    result.then(function () {
       process.exit(1);
-    }).catch(function (err){
+    }).catch(function (err) {
       console.log('Error: ', err.message);
       process.exit(1);
     })
