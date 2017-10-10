@@ -35,8 +35,8 @@ function init(config) {
     }catch(e){}
   }
   if(config.enableDbAuth && config.dbUser){
-    config.db.user = config.dbUser;
-    config.db.pass = config.pass;
+    data.db.user = config.dbUser;
+    data.db.pass = config.dbPass;
   }
   fs.ensureDirSync(root);
   fs.writeFileSync(path.resolve(root, 'config.json'), JSON.stringify(data, null, '   '));
