@@ -120,7 +120,7 @@ async function run(argv){
   }
   utils.log(`当前安装版本： ${v}`) 
   ensureFilepaths(root);
-  let domain = config.port == '80' ? 'http://127.0.0.1' : 'http://127.0.0.1:3000'
+  let domain = config.port == '80' ? 'http://127.0.0.1' : 'http://127.0.0.1:' + config.port
   try{
     await verifyConfig(config);
     let yapiPath = path.resolve(root, 'vendors');
