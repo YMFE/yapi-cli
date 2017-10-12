@@ -1,10 +1,12 @@
 const download = require('download');
 const fs = require('fs');
-
+const semver = require('semver')
+var utils;
 function github(version) {
+  version = 'v' + utils.handleVersion(version);
   return 'https://github.com/YMFE/yapi/archive/' + version + '.zip';
 }
-module.exports = {
+module.exports = utils =  {
   log: function(msg){
     console.log(msg);
   },

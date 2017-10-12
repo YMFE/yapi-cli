@@ -28,6 +28,7 @@ async function run(argv) {
 
 
   let v = argv.v;
+  v = v + utils.handleVersion(v);
   let hasPlugin = false;
 
   let versions = await axios.get('http://yapi.demo.qunar.com/publicapi/versions');
