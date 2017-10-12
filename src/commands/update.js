@@ -47,12 +47,10 @@ async function run(argv) {
   let v = argv.v;
   let hasPlugin = false;
 
-  if (!v || typeof v !== 'string') {
-    throw new Error('版本号不能为空');
-  }
-
   let versions = await axios.get('http://yapi.demo.qunar.com/publicapi/versions');
-  if (!_.find(versions.data, item => ('v' + item.version) === v)) {
+  if (!v || typeof v !== 'string') {
+    v = 'v' + versions.data[0].version;
+  }else if (!_.find(versions.data, item => ('v' + item.version) === v)) {
     throw new Error('不存在的版本号，请执行 yapi-cli ls 查看版本号列表');
   }
   let config = require(configFilepath);
