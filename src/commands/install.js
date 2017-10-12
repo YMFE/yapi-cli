@@ -90,21 +90,6 @@ function handleServerInstall(){
   })
 }
 
-function compareVersion(version, bigVersion){
-  version = version.split(".");
-  bigVersion = bigVersion.split(".");
-  for(let i = 0; i< version.length; i++){
-    version[i] = +version[i];
-    bigVersion[i] = +bigVersion[i];
-    if(version[i] > bigVersion[i]){
-      return false;
-    }else if(version[i] < bigVersion[i]){
-      return true;
-    }
-  }
-  return true;
-}
-
 async function run(argv){
   root = argv.dir;
   let configFilepath = path.resolve(root, 'config.json');
@@ -114,7 +99,7 @@ async function run(argv){
   }
   let nodeVersion = shell.exec('node -v', {silent: true}).substr(1);
   
-  if(!compareVersion('7.6', nodeVersion)){
+  if(!utils.compareVersion('7.6', nodeVersion)){
     throw new Error('node 需要 7.6 或以上版本')
   }
 

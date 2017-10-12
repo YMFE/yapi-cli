@@ -11,23 +11,6 @@ var root, config;
 const wget = utils.wget;
 const fileExist = utils.fileExist;
 
-// function handleNpmInstall(){
-//   return new Promise(function(resolve, reject){
-//     let child = shell.exec('npm install -q --production --registry https://registry.npm.taobao.org', {async: true, silent: true});
-//     child.stdout.on('data', (data) => {
-//       console.log(` ${data}`);
-//     });
-
-//     child.stderr.on('data', (data) => {
-//       console.log(` ${data}`);
-//     });
-
-//     child.on('close', (code) => {
-//       resolve(true);
-//     });
-//   })
-// }
-
 async function run(argv) {
   root = process.cwd();
   let configFilepath = path.resolve(root, 'config.json');
@@ -37,9 +20,9 @@ async function run(argv) {
   if (!shell.which('node') || !shell.which('npm')) {
     throw new Error('需要配置 node 和 npm 环境');
   }
-  let nodeVersion = parseFloat(shell.exec('node -v', { silent: true }).substr(1));
+  let nodeVersion = shell.exec('node -v', {silent: true}).substr(1);
 
-  if (nodeVersion < 7.6) {
+  if(!utils.compareVersion('7.6', nodeVersion)){
     throw new Error('node 需要 7.6 或以上版本')
   }
 

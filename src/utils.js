@@ -23,5 +23,27 @@ module.exports = {
     } catch (err) {
       return false;
     }
+  },
+  compareVersion: function compareVersion(version, bigVersion){
+    version = version.split(".");
+    bigVersion = bigVersion.split(".");
+    for(let i = 0; i< version.length; i++){
+      version[i] = +version[i];
+      bigVersion[i] = +bigVersion[i];
+      if(version[i] > bigVersion[i]){
+        return false;
+      }else if(version[i] < bigVersion[i]){
+        return true;
+      }
+    }
+    return true;
+  },
+  handleVersion: function(version){
+    if(!version) return version;
+    version = version  + '';
+    if(version[0] === 'v'){
+      return version.substr(1);
+    }
+    return version;
   }
 }
