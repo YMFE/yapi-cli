@@ -9,7 +9,7 @@
     npm install -g yapi-cli --registry https://registry.npm.taobao.org
     yapi-cli server 
 
-#### 升级
+## 升级
 升级项目版本是非常容易的，并且不会影响已有的项目数据，只会同步 vendors 目录下的源码文件。
 ```
 cd  {项目目录}
