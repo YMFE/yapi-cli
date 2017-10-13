@@ -17,14 +17,14 @@ commandsFile.forEach(function (file) {
 
 try {
   yargs.argv;
-  if (yargs.argv._.length === 0) {
+  if (yargs.argv._.length === 0 && !process.argv[2]) {
     const root = process.cwd();
     let configFilepath = path.resolve(root, 'config.json');
     if (!utils.fileExist(configFilepath)) {
       return console.log('在项目目录找不到配置文件 config.json,请确认是否安装项目到此目录');
     }
-    let package = require(path.resolve(root, './vendors/package.json'));
-    console.log(`当前项目版本是：${package.version}`)
+    let packageJson = require(path.resolve(root, './vendors/package.json'));
+    console.log(`当前项目版本是：${packageJson.version}`)
   }
 
 } catch (e) {

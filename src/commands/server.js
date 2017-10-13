@@ -91,7 +91,7 @@ module.exports = {
     app.listen(9090)
     console.log('在浏览器打开 http://127.0.0.1:9090 ');
     if (process.platform == 'wind32') {
-      cmd = 'start "%ProgramFiles%\Internet Explorer\iexplore.exe"';
+      cmd = 'open';
     } else if (process.platform == 'linux') {
       cmd = 'xdg-open';
     } else if (process.platform == 'darwin') {
