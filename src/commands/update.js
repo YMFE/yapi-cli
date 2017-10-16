@@ -37,6 +37,7 @@ async function run(argv) {
   }else if (!_.find(versions.data, item => ('v' + item.version) === v)) {
     throw new Error('不存在的版本号，请执行 yapi-cli ls 查看版本号列表');
   }
+  console.log('更新版本为' + v);
   let config = require(configFilepath);
   let npmInstall = 'npm install --production --registry https://registry.npm.taobao.org';
   if (config.plugins && Array.isArray(config.plugins) && config.plugins.length > 0) {

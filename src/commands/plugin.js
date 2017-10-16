@@ -37,7 +37,7 @@ module.exports = {
       let pluginName = name.substr('yapi-plugin-'.length)
       if (_.find(config.plugins, { name: pluginName })) {
         throw new Error('此插件已安装');
-      } else if (_.find(config.plugins, pluginName)) {
+      } else if (_.find(config.plugins, p=> p == pluginName)) {
         throw new Error('此插件已安装');
       }
       shell.cd('vendors');

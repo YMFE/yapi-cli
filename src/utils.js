@@ -4,6 +4,7 @@ const semver = require('semver')
 var utils;
 function github(version) {
   version = 'v' + utils.handleVersion(version);
+  console.log('https://github.com/YMFE/yapi/archive/' + version + '.zip');
   return 'https://github.com/YMFE/yapi/archive/' + version + '.zip';
 }
 module.exports = utils =  {
