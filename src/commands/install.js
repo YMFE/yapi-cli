@@ -158,5 +158,5 @@ module.exports = {
       process.exit(1);
     })
   },
-  desc: '部署 YApi 项目'
+  desc: '部署 YApi 项目,建议使用 yapi server 进行可视化部署'
 }

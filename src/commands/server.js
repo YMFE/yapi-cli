@@ -101,5 +101,5 @@ module.exports = {
       shell.exec(cmd +' http://127.0.0.1:9090', {silent: true});
     }catch(err){}
   },
-  desc: '更新 YApi 平台'
+  desc: '可视化部署 YApi 平台'
 }
