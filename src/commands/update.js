@@ -28,14 +28,16 @@ async function run(argv) {
 
 
   let v = argv.v;
-  v = v + utils.handleVersion(v);
+  v = 'v' + utils.handleVersion(v);
   let hasPlugin = false;
 
   let versions = await axios.get('http://yapi.demo.qunar.com/publicapi/versions');
   if (!v || typeof v !== 'string') {
     v = 'v' + versions.data[0].version;
-  }else if (!_.find(versions.data, item => ('v' + item.version) === v)) {
-    throw new Error('不存在的版本号，请执行 yapi-cli ls 查看版本号列表');
+  }else if (!_.find(versions.data, item => {
+    return ('v' + item.version) === v
+  })) {
+    throw new Error('不存在的版本号，请执行 yapi ls 查看版本号列表');
   }
   console.log('更新版本为' + v);
   let config = require(configFilepath);
