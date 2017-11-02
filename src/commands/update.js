@@ -15,7 +15,7 @@ async function run(argv) {
   root = process.cwd();
   let configFilepath = path.resolve(root, 'config.json');
   if (!fileExist(configFilepath)) {
-    throw new Error('项目目录找不到配置文件 config.json ');
+    throw new Error(utils.message.fount_project_path_error);
   }
   if (!shell.which('node') || !shell.which('npm')) {
     throw new Error('需要配置 node 和 npm 环境');
@@ -37,9 +37,9 @@ async function run(argv) {
   }else if (!_.find(versions.data, item => {
     return ('v' + item.version) === v
   })) {
-    throw new Error('不存在的版本号，请执行 yapi ls 查看版本号列表');
+    utils.log('不存在的版本号，请确认是否存在此版本，如果不存在，按 Ctrl+C 中断更新操作');
   }
-  console.log('更新版本为' + v);
+  utils.log('更新版本为' + v);
   let config = require(configFilepath);
   let npmInstall = 'npm install --production --registry https://registry.npm.taobao.org';
   if (config.plugins && Array.isArray(config.plugins) && config.plugins.length > 0) {

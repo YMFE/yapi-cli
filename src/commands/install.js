@@ -104,7 +104,7 @@ async function run(argv){
   }
 
   if(!fileExist(configFilepath)){
-    throw new Error( '在项目目录找不到配置文件 config.json ');
+    throw new Error(utils.message.fount_project_path_error);
   }
   config = require(configFilepath);
   if (!config || typeof config !== 'object') {

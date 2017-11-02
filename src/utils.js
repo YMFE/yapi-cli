@@ -8,6 +8,9 @@ function github(version) {
   return 'https://github.com/YMFE/yapi/archive/' + version + '.zip';
 }
 module.exports = utils =  {
+  message:{
+    'fount_project_path_error': '项目目录找不到配置文件 config.json, 请确认当前目录是否为项目目录'
+  },
   log: function(msg){
     console.log(msg);
   },

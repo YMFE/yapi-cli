@@ -18,7 +18,7 @@ module.exports = {
       root = process.cwd();
       let configFilepath = path.resolve(root, 'config.json');
       if (!utils.fileExist(configFilepath)) {
-        throw new Error('项目目录找不到配置文件 config.json ');
+        throw new Error(utils.message.fount_project_path_error);
       }
       let name = argv.name;
       config = require(configFilepath);

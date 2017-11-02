@@ -11,6 +11,11 @@ module.exports = {
       alias: 'n',
       describe: '插件名，需要写前缀 yapi-plugin- '
     })
+    yargs.option('build', {
+      alias: 'b',
+      default: true,
+      describe: '是否编译客户端代码，true 为编译, false 为不编译,  默认为 true'
+    })
   },
   run: function (argv) {
     try {
@@ -26,9 +31,8 @@ module.exports = {
         config.plugins = [];
       }
 
-
       if (!name) {
-        throw new Error('请输入需要安装的插件Name, yapi-cli plugin install --name yapi-plugin-*** ')
+        throw new Error('请输入需要安装的插件Name, yapi-cli plugin --name yapi-plugin-*** ')
       }
       if (name.indexOf('yapi-plugin-') !== 0) {
         throw new Error('插件name 前缀必需是 yapi-plugin-')
@@ -48,16 +52,18 @@ module.exports = {
       shell.cd('vendors');
       utils.log('正在下载插件...');
       shell.exec('npm install ' + name);
-      utils.log('插件下载成功，正在安装依赖...');
-      shell.exec('npm install --registry https://registry.npm.taobao.org');
-      utils.log('依赖安装完成，正在编译客户端')
+      utils.log('安装插件成功')
       config.plugins.push({
         name: pluginName
       }) 
       fs.writeFileSync(configFilepath, JSON.stringify(config, null, '   '));
-      shell.exec('ykit pack -m')
-           
-      utils.log('安装插件成功，请重启服务器')
+      if(argv.build === true){
+        utils.log('正在安装依赖...');
+        shell.exec('npm install --registry https://registry.npm.taobao.org');
+        shell.exec('ykit pack -m')        
+        utils.log('编译客户端成功，请重启服务器')
+      }
+      
     } catch (e) {
       utils.log(e.message);
     }
