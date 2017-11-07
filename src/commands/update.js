@@ -29,7 +29,7 @@ async function run(argv) {
 
   let v = argv.v;
   v = v ? 'v' + utils.handleVersion(v) : null;
-  let hasPlugin = false;
+  let hasPlugin = false, downloadType = 'yapi';
 
   let versions = await axios.get('http://yapi.demo.qunar.com/publicapi/versions');
   if (!v || typeof v !== 'string') {
@@ -37,6 +37,7 @@ async function run(argv) {
   }else if (!_.find(versions.data, item => {
     return ('v' + item.version) === v
   })) {
+    downloadType = 'github';
     utils.log('不存在的版本号，请确认是否存在此版本，如果不存在，按 Ctrl+C 中断更新操作');
   }
   utils.log('更新版本为' + v);
@@ -49,7 +50,7 @@ async function run(argv) {
 
   let yapiPath = path.resolve(root, 'vendors');
   utils.log('开始下载平台文件压缩包...')
-  await wget(yapiPath, v);
+  await wget(yapiPath, v, downloadType);
   utils.log('部署文件完成，正在执行 npm install...')
   shell.cd(yapiPath);
 

@@ -2,10 +2,16 @@ const download = require('download');
 const fs = require('fs');
 const semver = require('semver')
 var utils;
-function github(version) {
-  version = 'v' + utils.handleVersion(version);
-  console.log('https://github.com/YMFE/yapi/archive/' + version + '.zip');
-  return 'https://github.com/YMFE/yapi/archive/' + version + '.zip';
+function github(version, type) {
+  let url;
+  type = type || 'yapi';
+  if(type === 'github'){
+    url = 'https://github.com/YMFE/yapi/archive/' + version + '.zip'
+  }else{
+    url = 'http://yapi.demo.qunar.com/publicapi/archive/' + version;
+  }
+  console.log(url);
+  return url
 }
 module.exports = utils =  {
   message:{
@@ -17,8 +23,8 @@ module.exports = utils =  {
   error: function(error){
     console.error(error);
   },
-  wget: function ( dest, v) {
-    const url = github(v);
+  wget: function ( dest, v, type) {
+    const url = github(v, type);
     const cmd = download(url, dest, { extract: true, strip: 1 });
     cmd.stdout = process.stdout;  
     return cmd;
