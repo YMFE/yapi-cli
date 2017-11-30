@@ -25,6 +25,9 @@ module.exports = {
       if (!utils.fileExist(configFilepath)) {
         throw new Error('项目目录找不到配置文件 config.json ');
       }
+      if( !shell.which('ykit')){
+        throw new Error('需要安装 ykit ');
+      }
       let name = argv.name;
       config = require(configFilepath);
       if (!config.plugins || !Array.isArray(config.plugins)) {
