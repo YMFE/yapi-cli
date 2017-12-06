@@ -50,15 +50,20 @@ module.exports = {
           return plugin.name == pluginName
         }
       })) {
-        throw new Error('此插件已安装');
+        shell.cd('vendors');
+        utils.log('正在下载插件...');
+        shell.exec('npm install  --registry https://registry.npm.taobao.org ' + name);
+        utils.log('更新插件成功')
+      }else{
+        shell.cd('vendors');
+        utils.log('正在下载插件...');
+        shell.exec('npm install  --registry https://registry.npm.taobao.org ' + name);
+        utils.log('安装插件成功')
+        config.plugins.push({
+          name: pluginName
+        }) 
       }
-      shell.cd('vendors');
-      utils.log('正在下载插件...');
-      shell.exec('npm install ' + name);
-      utils.log('安装插件成功')
-      config.plugins.push({
-        name: pluginName
-      }) 
+      
       fs.writeFileSync(configFilepath, JSON.stringify(config, null, '   '));
       if(argv.build === true){
         utils.log('正在安装依赖...');
