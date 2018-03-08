@@ -1,6 +1,11 @@
 const download = require('download');
 const fs = require('fs');
+const fsExtra = require('fs-extra');
+const path = require('path');
 const semver = require('semver')
+
+const commandsDir = path.resolve(__dirname, 'commands');
+
 var utils;
 function github(version, type) {
   let url;
@@ -25,8 +30,21 @@ module.exports = utils =  {
   },
   wget: function ( dest, v, type) {
     const url = github(v, type);
-    const cmd = download(url, dest, { extract: true, strip: 1 });
-    cmd.stdout = process.stdout;  
+    let proxy = {};
+    let opt = {
+    	extract: true,
+		strip: 1
+	}
+	let protocol = type === 'github' ? 'https' : 'http';
+	  try {
+    	proxy = fsExtra.readJsonSync(`${commandsDir}/proxy.json`);
+		opt.proxy = `${protocol}://${proxy.host}:${proxy.port}`;
+	} catch (err) {
+    	console.log(err);
+		proxy = {};
+	}
+	const cmd = download(url, dest, opt);
+    cmd.stdout = process.stdout;
     return cmd;
   },
   fileExist: function (filePath) {

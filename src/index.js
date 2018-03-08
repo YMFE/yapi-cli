@@ -2,7 +2,27 @@ const fs = require('fs-extra');
 const path = require('path');
 const yargs = require('yargs');
 const utils = require('./utils');
+const axios = require('axios');
+
 const commandsDir = path.resolve(__dirname, 'commands');
+
+axios.interceptors.request.use(function (config) {
+	// Do something before request is sent
+	let proxy = {};
+	try{
+		proxy = fs.readJsonSync(`${commandsDir}/proxy.json`);
+
+	}catch(err) {
+		proxy = {};
+	}
+	config.proxy = proxy;
+	return config;
+
+}, function (error) {
+	console.error(error);
+});
+
+
 var commands = [];
 var commandsFile = fs.readdirSync(commandsDir);
 commandsFile.forEach(function (file) {
