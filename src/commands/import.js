@@ -32,9 +32,9 @@ module.exports = {
       let params = {
         type: config.type,
         token: config.token,
-        json: content
+        json: content,
+        merge: config.merge
       }
-
       let apiUrl = url.resolve(config.server, '/api/open/import_data')
       let result = await axios.post(apiUrl, params)
       if(result.data.errcode){
