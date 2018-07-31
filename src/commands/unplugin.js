@@ -33,6 +33,10 @@ module.exports = {
         throw new Error('插件name 前缀必需是 yapi-plugin-')
       }
 
+      if( !shell.which('ykit')){
+        throw new Error('需要安装 ykit ');
+      }
+
       let pluginName = name.substr('yapi-plugin-'.length);
       config.plugins = config.plugins.filter(plugin=>{
         if(typeof plugin === 'string'){

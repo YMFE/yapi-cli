@@ -66,6 +66,10 @@ async function run(argv) {
         shell.exec('npm install ' + 'yapi-plugin-' + item.name)
       }
     })
+    utils.log('执行 ykit pack -m ...');
+    if( !shell.which('ykit')){
+      throw new Error('需要安装 ykit ');
+    }
     shell.exec('ykit pack -m');
   }
 
