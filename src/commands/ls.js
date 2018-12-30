@@ -6,14 +6,10 @@ const axios = require('axios');
 
 module.exports = {
   setOptions: function (yargs) {},
-  run: function (argv) {
-    axios.get('http://yapi.demo.qunar.com/publicapi/versions').then(res=>{
-      res = res.data;
-      if(res && Array.isArray(res)){
-        res.forEach(item=>{
-          console.log('v' + item.version);
-        })
-      }
+  run: async function (argv) {
+    let versions = await utils.getVersions();
+    versions.forEach(v=>{
+      console.log('v' + v);
     })
   },
   desc: '获取版本信息'

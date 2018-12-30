@@ -1,22 +1,77 @@
 const download = require('download');
 const fs = require('fs');
 const semver = require('semver')
-var utils;
-function github(version, type) {
+const axios = require('axios')
+
+function oldVersion(){
+  return [
+    "1.4.1",
+    "1.3.23",
+    "1.3.22",
+    "1.3.21",
+    "1.3.20",
+    "1.3.19",
+    "1.3.18",
+    "1.3.17",
+    "1.3.16",
+    "1.3.14",
+    "1.3.12",
+    "1.3.11",
+    "1.3.9",
+    "1.3.8",
+    "1.3.7",
+    "1.3.6",
+    "1.3.5",
+    "1.3.4",
+    "1.3.3",
+    "1.3.1",
+    "1.2.9",
+    "1.2.8",
+    "1.2.7",
+    "1.2.5",
+    "1.2.4",
+    "1.2.3",
+    "1.2.0",
+    "1.1.2",
+    "1.1.1",
+    "1.1.0"
+  ]
+}
+
+
+function github(version, type = 'npm') {
   let url;
-  type = type || 'yapi';
+  if(version[0] === 'v' || version[0] === 'V'){
+    version = version.substr(1)
+  }
+
+  if(oldVersion().indexOf(version) !== -1){
+    type = 'qunar'
+  }
+
   if(type === 'github'){
+    version = 'v' + version;
     url = 'https://github.com/YMFE/yapi/archive/' + version + '.zip'
-  }else{
+  }else if(type === 'npm'){
+    url = `http://registry.npm.taobao.org/yapi-vendor/download/yapi-vendor-${version}.tgz`
+  }else {
+    version = 'v' + version;
     url = 'http://yapi.demo.qunar.com/publicapi/archive/' + version;
   }
-  console.log(url);
   return url
 }
-module.exports = utils =  {
+module.exports ={
   message:{
     'fount_project_path_error': '项目目录找不到配置文件 config.json, 请确认当前目录是否为项目目录'
   },
+
+  getVersions: async function(){
+    let info = await axios.get('https://www.easy-mock.com/mock/5c2851e3d84c733cb500c3b9/yapi/versions');
+    let versions = info.data.data;
+    console.log(versions)
+    return [].concat(versions, oldVersion())
+  },
+
   log: function(msg){
     console.log(msg);
   },
@@ -26,6 +81,7 @@ module.exports = utils =  {
   wget: function ( dest, v, type) {
     const url = github(v, type);
     const cmd = download(url, dest, { extract: true, strip: 1 });
+    console.log(url)
     cmd.stdout = process.stdout;  
     return cmd;
   },

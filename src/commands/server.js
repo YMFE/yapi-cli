@@ -79,13 +79,14 @@ module.exports = {
       });
     });
 
-    app.get('/api/base', function (req, res) {
-      axios.get('http://yapi.demo.qunar.com/publicapi/versions').then(result=>{
-        res.send({
-          versions:  result.data,
-          root: path.resolve(process.cwd(), 'my-yapi')
-        })
+    app.get('/api/base', async function (req, res) {
+
+      let versions = await utils.getVersions();
+      res.send({
+        versions,
+        root: path.resolve(process.cwd(), 'my-yapi')
       })
+
     })
     app.use(express.static(path.resolve(__dirname, './server')))
     app.listen(9090)

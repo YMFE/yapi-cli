@@ -31,11 +31,12 @@ async function run(argv) {
   v = v ? 'v' + utils.handleVersion(v) : null;
   let hasPlugin = false, downloadType = 'yapi';
 
-  let versions = await axios.get('http://yapi.demo.qunar.com/publicapi/versions');
+  let versions = await utils.getVersions();
+
   if (!v || typeof v !== 'string') {
-    v = 'v' + versions.data[0].version;
-  }else if (!_.find(versions.data, item => {
-    return ('v' + item.version) === v
+    v = 'v' + versions[0];
+  }else if (!_.find(versions, item => {
+    return ('v' + item) === v
   })) {
     downloadType = 'github';
     utils.log('不存在的版本号，请确认是否存在此版本，如果不存在，按 Ctrl+C 中断更新操作');

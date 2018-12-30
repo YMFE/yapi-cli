@@ -1,6 +1,6 @@
 {
   "name": "yapi-cli",
-  "version": "1.2.8",
+  "version": "1.3.0",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -47,7 +47,7 @@
       "maxSubjectLength": 100,
       "subjectPattern": ".+",
       "subjectPatternErrorMsg": "请输入message信息!",
-      "helpMessage": "Commit message 格式错误, \n请查看规范: http://wiki.corp.qunar.com/pages/viewpage.action?pageId=159698767"
+      "helpMessage": "Commit message 格式错误, \n请查看规范: http://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html"
     }
   },
   "devDependencies": {

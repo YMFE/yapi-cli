@@ -83,10 +83,12 @@
     var Ctor, websocket, model;
     axios.get('/api/base').then(function (res) {
       document.getElementById('app').style.display = 'block';
-      res.data.versions.map(function(item){
-        item.version = 'v' + item.version;
-        return item;
+      res.data.versions = res.data.versions.map(function(item){
+        return {
+          version: item
+        };
       })
+
       var Main = {
         data: function () {
           return {
