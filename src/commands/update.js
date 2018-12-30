@@ -29,7 +29,7 @@ async function run(argv) {
 
   let v = argv.v;
   v = v ? 'v' + utils.handleVersion(v) : null;
-  let hasPlugin = false, downloadType = 'yapi';
+  let hasPlugin = false, downloadType = 'npm';
 
   let versions = await utils.getVersions();
 
