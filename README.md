@@ -8,6 +8,9 @@
 
     npm install -g yapi-cli --registry https://registry.npm.taobao.org
     yapi server 
+    
+    # 指定端口 默认 9090
+    yapi server --port 9290
 ## 基本用法
 ```
 yapi --help // 查看 yapi-cli 命令

@@ -89,8 +89,9 @@ module.exports = {
 
     })
     app.use(express.static(path.resolve(__dirname, './server')))
-    app.listen(9090)
-    console.log('在浏览器打开 http://0.0.0.0:9090 访问。非本地服务器，请将 0.0.0.0 替换成指定的域名或ip ');
+    const port = argv.port || 9090
+    app.listen(port)
+    console.log(`在浏览器打开 http://0.0.0.0:${port} 访问。非本地服务器，请将 0.0.0.0 替换成指定的域名或ip `);
     // if (process.platform == 'wind32') {
     //   cmd = 'open';
     // } else if (process.platform == 'linux') {
@@ -99,7 +100,7 @@ module.exports = {
     //   cmd = 'open';
     // }
     // try{
-    //   shell.exec(cmd +' http://0.0.0.0:9090', {async: true});
+    //   shell.exec(cmd +' http://0.0.0.0:' + port, {async: true});
     // }catch(err){}
   },
   desc: '可视化部署 YApi 平台'
