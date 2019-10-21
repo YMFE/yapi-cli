@@ -12,10 +12,14 @@ module.exports = {
       describe: '配置文件路径，默认为当前目录下 yapi-import.json',
       default: path.resolve(cwd, 'yapi-import.json')
     })
+    yargs.option('proxy', {
+      describe: '代理配置'
+    })
   },
   run: async function (argv) {
     try{
       let config = require(argv.config)
+      let proxy = argv.proxy && JSON.parse(argv.proxy)
       let content;
       if(config.file.indexOf('http') !== 0){
         content = require(path.resolve(cwd, config.file))
@@ -36,7 +40,7 @@ module.exports = {
         merge: config.merge
       }
       let apiUrl = url.resolve(config.server, '/api/open/import_data')
-      let result = await axios.post(apiUrl, params)
+      let result = await axios.post(apiUrl, params, proxy && {proxy: proxy})
       if(result.data.errcode){
         console.error(result.data.errmsg)
       }else{
