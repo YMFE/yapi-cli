@@ -2,7 +2,6 @@ const path = require('path');
 const fs = require('fs-extra');
 const utils = require('../utils.js');
 const shell = require('shelljs');
-const axios = require('axios');
 const _ = require('underscore');
 let root, config;
 module.exports = {
