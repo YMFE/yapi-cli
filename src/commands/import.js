@@ -28,7 +28,7 @@ module.exports = {
         content = content.data;
       }
       if(typeof content === 'object' && content){
-        content = JSON.stringify(content,null,2)
+        content = JSON.stringify(content)
       }
       if(!content){
         return console.error('json 数据不能为空')
